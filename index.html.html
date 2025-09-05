@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenithSoft Rx</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #2c5aa0;
+            --color-secondary: #4a90e2;
+            --color-tertiary: #f8fafc;
+            --color-text: #2d3748;
+            --color-text-light: #ffffff;
+            --color-border: #e2e8f0;
+            --color-success: #48bb78;
+            --color-danger: #f56565;
+            --color-info: #4299e1;
+            --color-warning: #ed8936;
+            --font-family: 'Roboto', sans-serif;
+            --font-heading: 'Poppins', 'Roboto', sans-serif;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --box-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --blur: blur(8px);
+            --backdrop: rgba(255, 255, 255, 0.8);
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(120, 119, 198, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            background: var(--backdrop);
+            backdrop-filter: var(--blur);
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
+            margin: 20px;
+            padding: 30px;
+            position: relative;
+            padding-left: 100px; /* espacio para columnas de pestañas a la izquierda */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        header {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            color: var(--color-primary);
+            font-size: 2.6em;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            margin: 0 0 6px 0;
+            background: linear-gradient(90deg, #2c5aa0 0%, #63b3ed 50%, #2c5aa0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 12px rgba(74, 144, 226, 0.35);
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -30%;
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
+            transform: skewX(-20deg);
+            animation: shine 3.2s ease-in-out infinite;
+            pointer-events: none;
+            filter: blur(0.5px);
+        }
+
+        @keyframes shine {
+            0% { left: -30%; }
+            55% { left: 110%; }
+            100% { left: 110%; }
+        }
+
+        header p {
+            margin: 0;
+            color: var(--color-secondary);
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            position: absolute;
+            left: 20px;
+            top: 140px;
+            gap: 10px;
+            border-bottom: none;
+            z-index: 2147483647;
+        }
+
+        .nav-link {
+            flex-grow: 0;
+            text-align: center;
+            padding: 12px 8px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-weight: bold;
+            color: var(--color-primary);
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: var(--blur);
+            min-width: 50px;
+            position: relative;
+            font-size: 1.2em;
+        }
+
+        .nav-link::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(44, 90, 160, 0.95);
+            color: var(--color-text-light);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 2147483647;
+            pointer-events: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-left: 10px;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 5px solid transparent;
+            border-right-color: rgba(44, 90, 160, 0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 2147483647;
+            margin-left: 5px;
+        }
+
+        .nav-link:hover::before,
+        .nav-link:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-link:hover {
+            background: rgba(74, 144, 226, 0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .nav-link.active {
+            border-color: var(--color-secondary);
+            color: var(--color-secondary);
+            background: rgba(74, 144, 226, 0.1);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
+        }
+
+        /* Adaptación para dispositivos móviles */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            
+            .nav-tabs {
+                position: static;
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-bottom: 20px;
+                border-bottom: 2px solid var(--color-border);
+            }
+            
+            .nav-link {
+                min-width: auto;
+                flex: 1;
+                padding: 10px 8px;
+                font-size: 0.9em;
+            }
+
+            .nav-link::before,
+            .nav-link::after {
+                display: none;
+            }
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--color-primary);
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .form-container,
+        .table-container {
+            margin-bottom: 20px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: var(--blur);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1 1 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--color-primary);
+        }
+
+        input,
+        select {
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: var(--blur);
+            transition: var(--transition);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input:read-only {
+            background-color: #e9ecef;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: var(--color-text-light);
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            backdrop-filter: var(--blur);
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            box-shadow: 0 4px 15px rgba(44, 90, 160, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(44, 90, 160, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--color-success), #68d391);
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--color-danger), #fc8181);
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 101, 101, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, var(--color-info), #63b3ed);
+            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            background: var(--color-text-light);
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            background: var(--color-primary);
+            color: var(--color-text-light);
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(248, 250, 252, 0.5);
+        }
+
+        tr:hover {
+            background: rgba(74, 144, 226, 0.08);
+            transition: var(--transition);
+        }
+
+        .actions-cell {
+            white-space: nowrap;
+        }
+
+        .actions-cell button {
+            margin-right: 4px;
+            padding: 6px 10px;
+            font-size: 0.8em;
+        }
+
+        /* Tooltips para botones */
+        button[title] {
+            position: relative;
+        }
+
+        button[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-primary);
+            color: var(--color-text-light);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            z-index: 2147483647;
+            margin-bottom: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button[title]:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--color-primary);
+            z-index: 2147483647;
+            margin-bottom: -5px;
+        }
+
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            z-index: 10;
+            border: 1px solid var(--color-border);
+            border-top: none;
+            background-color: var(--color-text-light);
+            max-height: 200px;
+            overflow-y: auto;
+            width: 100%;
+            box-shadow: var(--box-shadow);
+        }
+
+        .autocomplete-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .autocomplete-item:hover {
+            background-color: var(--color-secondary);
+            color: var(--color-text-light);
+        }
+
+        .total-summary {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+            color: var(--color-secondary);
+        }
+
+        .file-upload-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-upload-container input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            padding: 12px 20px;
+            background-color: var(--color-info);
+            color: var(--color-text-light);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-upload-label:hover {
+            background-color: #138496;
+        }
+
+        .practice-row {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .practice-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .practice-row-title {
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .printable-area,
+            .printable-area * {
+                visibility: visible;
+            }
+
+            .printable-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            .printable-area h2,
+            .printable-area table,
+            .printable-area p {
+                page-break-inside: avoid;
+            }
+
+            @page {
+                size: A4 landscape;
+                margin: 1cm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>ZenithSoft Rx</h1>
+            <p>Servicio de Radiología - FOUNNE</p>
+        </header>
+
+        <div class="nav-tabs">
+            <div class="nav-link active" data-tab="registro" data-tooltip="Registro de Prácticas">👤</div>
+            <div class="nav-link" data-tab="reportes-generales" data-tooltip="Reportes Generales">📊</div>
+            <div class="nav-link" data-tab="reportes-ISSUNNE" data-tooltip="Reportes ISSUNNE">🏥</div>
+            <div class="nav-link" data-tab="configuracion" data-tooltip="Configuración">⚙</div>
+        </div>
+
+        <div id="configuracion" class="tab-content">
+            <h2>Gestión de Prácticas</h2>
+            <div class="form-container">
+                <form id="practice-form">
+                    <input type="hidden" id="practice-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="practice-category">Categoría</label>
+                            <input type="text" id="practice-category" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="practice-code">Código de Práctica</label>
+                            <input type="text" id="practice-code" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="practice-name">Nombre de Práctica</label>
+                            <input type="text" id="practice-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="practice-fee">Arancel</label>
+                            <input type="number" id="practice-fee" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn-primary" title="Guardar nueva práctica o actualizar existente">Guardar Práctica</button>
+                        <button type="button" class="btn-danger" id="cancel-practice-edit"
+                            style="display:none;" title="Cancelar edición">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table id="practices-table">
+                        <thead>
+                            <tr>
+                                <th>Categoría</th>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Arancel</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>Gestión de Operadores</h2>
+            <div class="form-container">
+                <form id="operator-form">
+                    <input type="hidden" id="operator-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="operator-name">Apellido y Nombre Operador</label>
+                            <input type="text" id="operator-name" required>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn-primary" title="Guardar nuevo operador o actualizar existente">Guardar Operador</button>
+                        <button type="button" class="btn-danger" id="cancel-operator-edit"
+                            style="display:none;" title="Cancelar edición">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table id="operators-table">
+                        <thead>
+                            <tr>
+                                <th>Apellido y Nombre</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>Backup de Datos</h2>
+            <div class="form-container">
+                <div class="btn-group">
+                    <button id="export-btn" class="btn-success" title="Exportar todos los datos como archivo JSON">Guardar (Backup)</button>
+                    <div class="file-upload-container">
+                        <input type="file" id="import-file" accept=".json">
+                        <label for="import-file" class="file-upload-label" title="Importar datos desde archivo JSON">Importar (Restaurar)</label>
+                        <span id="import-file-name" style="font-style: italic; color: var(--color-primary);"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <hr>
+           
+        </footer>
+
+        <div id="registro" class="tab-content active">
+            <h2>Registro de Práctica</h2>
+            <div class="form-container">
+                <form id="record-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="record-date">Fecha</label>
+                            <input type="date" id="record-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-receipt">N° de Recibo / Orden</label>
+                            <input type="text" id="record-receipt" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-patient">Paciente / Afiliado</label>
+                            <input type="text" id="record-patient" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-age">Edad</label>
+                            <input type="number" id="record-age" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-sex">Sexo</label>
+                            <select id="record-sex" required>
+                                <option value="">Seleccione</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="record-operator">Operador</label>
+                            <select id="record-operator" required></select>
+                        </div>
+                    </div>
+                    
+                    <h3>Prácticas</h3>
+                    <div id="practices-container">
+                        <div class="practice-row">
+                            <div class="practice-row-header">
+                                <div class="practice-row-title">Práctica #1</div>
+                                <button type="button" class="btn-info add-practice-btn">+</button>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="record-code-1">Código</label>
+                                    <div class="autocomplete-container">
+                                        <input type="text" id="record-code-1" class="record-code" required>
+                                        <div class="autocomplete-list" style="display:none;"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="record-category-1">Categoría</label>
+                                    <input type="text" id="record-category-1" class="record-category" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="record-practice-1">Práctica</label>
+                                    <input type="text" id="record-practice-1" class="record-practice" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="record-quantity-1">Cantidad</label>
+                                    <input type="number" id="record-quantity-1" class="record-quantity" min="1" value="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="record-fee-1">Arancel</label>
+                                    <input type="number" id="record-fee-1" class="record-fee" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="record-subtotal-1">Subtotal</label>
+                                    <input type="number" id="record-subtotal-1" class="record-subtotal" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="record-total">Costo Total</label>
+                            <input type="number" id="record-total" readonly>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn-success" title="Guardar el registro de práctica con todos los datos">Guardar Registro</button>
+                    </div>
+                </form>
+            </div>
+
+            <hr>
+
+            <h2>Últimos Registros</h2>
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table id="last-records-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Recibo/Orden</th>
+                                <th>Paciente</th>
+                                <th>Edad</th>
+                                <th>Sexo</th>
+                                <th>Código</th>
+                                <th>Práctica</th>
+                                <th>Cantidad</th>
+                                <th>Operador</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="reportes-generales" class="tab-content">
+            <h2>Reportes Generales</h2>
+            <div class="form-container">
+                <form id="general-report-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="filter-date-from">Fecha Desde</label>
+                            <input type="date" id="filter-date-from">
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-date-to">Fecha Hasta</label>
+                            <input type="date" id="filter-date-to">
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-operator">Operador</label>
+                            <select id="filter-operator">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-category">Categoría</label>
+                            <select id="filter-category">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" id="filter-general-btn" class="btn-primary" title="Aplicar filtros y mostrar resultados">Filtrar</button>
+                        <button type="button" id="print-general-btn" class="btn-info" title="Imprimir el reporte general">Imprimir</button>
+                    </div>
+                </form>
+            </div>
+            <div class="table-container printable-area">
+                <div class="print-header">
+                    <h3>Reporte General de Prácticas</h3>
+                    <p id="general-report-filters"></p>
+                </div>
+                <div class="table-responsive">
+                    <table id="general-report-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Paciente</th>
+                                <th>Código</th>
+                                <th>Práctica</th>
+                                <th>Cantidad</th>
+                                <th>N° de Recibo / Orden</th>
+                                <th>Facturado</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="total-summary" id="general-total"></div>
+            </div>
+        </div>
+
+        <div id="reportes-ISSUNNE" class="tab-content">
+            <h2>Reportes ISSUNNE</h2>
+            <div class="form-container">
+                <form id="ISSUNNE-report-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="filter-ISSUNNE-date-from">Fecha Desde</label>
+                            <input type="date" id="filter-ISSUNNE-date-from">
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-ISSUNNE-date-to">Fecha Hasta</label>
+                            <input type="date" id="filter-ISSUNNE-date-to">
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" id="filter-ISSUNNE-btn" class="btn-primary" title="Aplicar filtros y mostrar resultados ISSUNNE">Filtrar</button>
+                        <button type="button" id="print-ISSUNNE-btn" class="btn-info" title="Imprimir el reporte ISSUNNE">Imprimir</button>
+                    </div>
+                </form>
+            </div>
+            <div class="table-container printable-area">
+                <div class="print-header">
+                    <h3>Reporte ISSUNNE</h3>
+                    <p id="ISSUNNE-report-filters"></p>
+                </div>
+                <div class="table-responsive">
+                    <table id="ISSUNNE-report-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Orden N°</th>
+                                <th>Afiliado</th>
+                                <th>Código</th>
+                                <th>Cantidad</th>
+                                <th>Práctica</th>
+                                <th>Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="total-summary" id="ISSUNNE-total"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CÓDIGO JavaScript para toda la lógica de la aplicación ---
+            const tabLinks = document.querySelectorAll('.nav-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+
+            // --- VARIABLES PARA EL ALMACENAMIENTO DE DATOS ---
+            let practices = JSON.parse(localStorage.getItem('practices')) || [];
+            let operators = JSON.parse(localStorage.getItem('operators')) || [];
+            let records = JSON.parse(localStorage.getItem('records')) || [];
+
+            // --- NAVEGACIÓN ENTRE PESTAÑAS ---
+            tabLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const tabId = link.getAttribute('data-tab');
+                    tabLinks.forEach(item => item.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    link.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+
+                    // Lógica para cargar datos al cambiar de pestaña
+                    if (tabId === 'configuracion') {
+                        renderPractices();
+                        renderOperators();
+                    } else if (tabId === 'registro') {
+                        populateOperatorSelect();
+                        renderLastRecords();
+                        document.getElementById('record-date').valueAsDate = new Date();
+                    } else if (tabId === 'reportes-generales') {
+                        populateReportFilters();
+                        filterGeneralReport();
+                    } else if (tabId === 'reportes-ISSUNNE') {
+                        filterISSUNNEReport();
+                    }
+                });
+            });
+
+            // --- SECCIÓN 1: CONFIGURACIÓN (PRÁCTICAS Y OPERADORES) ---
+
+            // 1.a. Gestión de Prácticas
+            const practiceForm = document.getElementById('practice-form');
+            const practicesTableBody = document.querySelector('#practices-table tbody');
+
+            function renderPractices() {
+                practicesTableBody.innerHTML = '';
+                practices.forEach(p => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${p.category}</td>
+                        <td>${p.code}</td>
+                        <td>${p.name}</td>
+                        <td>$${p.fee.toFixed(2)}</td>
+                        <td class="actions-cell">
+                            <button class="btn-info" onclick="editPractice('${p.id}')">Editar</button>
+                            <button class="btn-danger" onclick="deletePractice('${p.id}')">Eliminar</button>
+                        </td>
+                    `;
+                    practicesTableBody.appendChild(row);
+                });
+                localStorage.setItem('practices', JSON.stringify(practices));
+            }
+
+            window.editPractice = (id) => {
+                const practice = practices.find(p => p.id === id);
+                if (practice) {
+                    document.getElementById('practice-id').value = practice.id;
+                    document.getElementById('practice-category').value = practice.category;
+                    document.getElementById('practice-code').value = practice.code;
+                    document.getElementById('practice-name').value = practice.name;
+                    document.getElementById('practice-fee').value = practice.fee;
+                    document.querySelector('#practice-form button[type="submit"]').textContent = 'Actualizar Práctica';
+                    document.getElementById('cancel-practice-edit').style.display = 'inline-block';
+                }
+            };
+
+            window.deletePractice = (id) => {
+                if (confirm('¿Estás seguro de que deseas eliminar esta práctica?')) {
+                    practices = practices.filter(p => p.id !== id);
+                    renderPractices();
+                    alert('Práctica eliminada.');
+                }
+            };
+
+            practiceForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('practice-id').value;
+                const newPractice = {
+                    id: id || Date.now().toString(),
+                    category: document.getElementById('practice-category').value,
+                    code: document.getElementById('practice-code').value.toUpperCase(),
+                    name: document.getElementById('practice-name').value,
+                    fee: parseFloat(document.getElementById('practice-fee').value),
+                };
+
+                if (id) {
+                    const index = practices.findIndex(p => p.id === id);
+                    if (index !== -1) practices[index] = newPractice;
+                    alert('Práctica actualizada.');
+                } else {
+                    practices.push(newPractice);
+                    alert('Práctica agregada.');
+                }
+
+                practiceForm.reset();
+                document.getElementById('practice-id').value = '';
+                document.querySelector('#practice-form button[type="submit"]').textContent = 'Guardar Práctica';
+                document.getElementById('cancel-practice-edit').style.display = 'none';
+                renderPractices();
+            });
+
+            document.getElementById('cancel-practice-edit').addEventListener('click', () => {
+                practiceForm.reset();
+                document.getElementById('practice-id').value = '';
+                document.querySelector('#practice-form button[type="submit"]').textContent = 'Guardar Práctica';
+                document.getElementById('cancel-practice-edit').style.display = 'none';
+            });
+
+            // 1.b. Gestión de Operadores
+            const operatorForm = document.getElementById('operator-form');
+            const operatorsTableBody = document.querySelector('#operators-table tbody');
+
+            function renderOperators() {
+                operatorsTableBody.innerHTML = '';
+                operators.forEach(o => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${o.name}</td>
+                        <td class="actions-cell">
+                            <button class="btn-info" onclick="editOperator('${o.id}')">Editar</button>
+                            <button class="btn-danger" onclick="deleteOperator('${o.id}')">Eliminar</button>
+                        </td>
+                    `;
+                    operatorsTableBody.appendChild(row);
+                });
+                localStorage.setItem('operators', JSON.stringify(operators));
+            }
+
+            window.editOperator = (id) => {
+                const operator = operators.find(o => o.id === id);
+                if (operator) {
+                    document.getElementById('operator-id').value = operator.id;
+                    document.getElementById('operator-name').value = operator.name;
+                    document.querySelector('#operator-form button[type="submit"]').textContent = 'Actualizar Operador';
+                    document.getElementById('cancel-operator-edit').style.display = 'inline-block';
+                }
+            };
+
+            window.deleteOperator = (id) => {
+                if (confirm('¿Estás seguro de que deseas eliminar este operador?')) {
+                    operators = operators.filter(o => o.id !== id);
+                    renderOperators();
+                    alert('Operador eliminado.');
+                }
+            };
+
+            operatorForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('operator-id').value;
+                const newOperator = {
+                    id: id || Date.now().toString(),
+                    name: document.getElementById('operator-name').value
+                };
+
+                if (id) {
+                    const index = operators.findIndex(o => o.id === id);
+                    if (index !== -1) operators[index] = newOperator;
+                    alert('Operador actualizado.');
+                } else {
+                    operators.push(newOperator);
+                    alert('Operador agregado.');
+                }
+
+                operatorForm.reset();
+                document.getElementById('operator-id').value = '';
+                document.querySelector('#operator-form button[type="submit"]').textContent = 'Guardar Operador';
+                document.getElementById('cancel-operator-edit').style.display = 'none';
+                renderOperators();
+            });
+
+            document.getElementById('cancel-operator-edit').addEventListener('click', () => {
+                operatorForm.reset();
+                document.getElementById('operator-id').value = '';
+                document.querySelector('#operator-form button[type="submit"]').textContent = 'Guardar Operador';
+                document.getElementById('cancel-operator-edit').style.display = 'none';
+            });
+
+            // 1.c. Funcionalidad de Backup
+            document.getElementById('export-btn').addEventListener('click', () => {
+                const data = {
+                    practices: practices,
+                    operators: operators,
+                    records: records
+                };
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const date = new Date().toISOString().slice(0, 10);
+                a.download = `datos_radiologia_FOUNNE_${date}.json`;
+                a.href = url;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('Datos exportados correctamente.');
+            });
+
+            document.getElementById('import-file').addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                document.getElementById('import-file-name').textContent = file.name;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (importedData.practices && importedData.operators && importedData.records) {
+                            if (confirm('¿Estás seguro de que deseas importar estos datos? Esto reemplazará los datos actuales.')) {
+                                practices = importedData.practices;
+                                operators = importedData.operators;
+                                records = importedData.records;
+                                localStorage.setItem('practices', JSON.stringify(practices));
+                                localStorage.setItem('operators', JSON.stringify(operators));
+                                localStorage.setItem('records', JSON.stringify(records));
+                                renderPractices();
+                                renderOperators();
+                                // Refrescar vistas dependientes
+                                try { renderLastRecords(); } catch(_) {}
+                                try { filterGeneralReport(); } catch(_) {}
+                                try { filterISSUNNEReport(); } catch(_) {}
+                                alert('Datos importados y restaurados correctamente.');
+                            }
+                        } else {
+                            alert('El archivo JSON no tiene la estructura correcta.');
+                        }
+                    } catch (error) {
+                        alert('Error al leer el archivo JSON. Asegúrate de que el formato es correcto.');
+                        console.error('Import Error:', error);
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // --- SECCIÓN 2: REGISTRO ---
+
+            const recordForm = document.getElementById('record-form');
+            const lastRecordsTableBody = document.querySelector('#last-records-table tbody');
+            const recordOperatorSelect = document.getElementById('record-operator');
+            const practicesContainer = document.getElementById('practices-container');
+
+            function populateOperatorSelect() {
+                recordOperatorSelect.innerHTML = '';
+                operators.forEach(o => {
+                    const option = document.createElement('option');
+                    option.value = o.name;
+                    option.textContent = o.name;
+                    recordOperatorSelect.appendChild(option);
+                });
+            }
+
+            function renderLastRecords() {
+                lastRecordsTableBody.innerHTML = '';
+                const last10Records = records.slice(-10).reverse();
+                last10Records.forEach(r => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${r.date}</td>
+                        <td>${r.receipt}</td>
+                        <td>${r.patient}</td>
+                        <td>${r.age}</td>
+                        <td>${r.sex}</td>
+                        <td>${r.practices.map(p => p.code).join(', ')}</td>
+                        <td>${r.practices.map(p => p.practice).join(', ')}</td>
+                        <td>${r.practices.map(p => p.quantity).join(', ')}</td>
+                        <td>${r.operator}</td>
+                        <td>$${r.total.toFixed(2)}</td>
+                    `;
+                    lastRecordsTableBody.appendChild(row);
+                });
+            }
+
+            // Función para agregar una nueva fila de práctica
+            function addPracticeRow() {
+                const existingRows = document.querySelectorAll('.practice-row').length;
+                const practiceCount = existingRows + 1;
+                const newRow = document.createElement('div');
+                newRow.className = 'practice-row';
+                const isFirstRow = existingRows === 0;
+                const headerButton = isFirstRow
+                    ? '<button type="button" class="btn-info add-practice-btn">+</button>'
+                    : '<button type="button" class="btn-danger remove-practice-btn">🗑</button>';
+
+                newRow.innerHTML = `
+                    <div class="practice-row-header">
+                        <div class="practice-row-title">Práctica #${practiceCount}</div>
+                        ${headerButton}
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="record-code-${practiceCount}">Código</label>
+                            <div class="autocomplete-container">
+                                <input type="text" id="record-code-${practiceCount}" class="record-code" required>
+                                <div class="autocomplete-list" style="display:none;"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-category-${practiceCount}">Categoría</label>
+                            <input type="text" id="record-category-${practiceCount}" class="record-category" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-practice-${practiceCount}">Práctica</label>
+                            <input type="text" id="record-practice-${practiceCount}" class="record-practice" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-quantity-${practiceCount}">Cantidad</label>
+                            <input type="number" id="record-quantity-${practiceCount}" class="record-quantity" min="1" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-fee-${practiceCount}">Arancel</label>
+                            <input type="number" id="record-fee-${practiceCount}" class="record-fee" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-subtotal-${practiceCount}">Subtotal</label>
+                            <input type="number" id="record-subtotal-${practiceCount}" class="record-subtotal" readonly>
+                        </div>
+                    </div>
+                `;
+                practicesContainer.appendChild(newRow);
+
+                // Configurar eventos para la nueva fila
+                const codeInput = newRow.querySelector('.record-code');
+                const quantityInput = newRow.querySelector('.record-quantity');
+
+                codeInput.addEventListener('input', handleCodeInput);
+                quantityInput.addEventListener('input', calculateSubtotal);
+
+                const addBtn = newRow.querySelector('.add-practice-btn');
+                if (addBtn) {
+                    addBtn.addEventListener('click', addPracticeRow);
+                }
+
+                const removeBtn = newRow.querySelector('.remove-practice-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', () => {
+                        newRow.remove();
+                        calculateTotal();
+                    });
+                }
+            }
+
+            // Evento para el botón de agregar práctica
+            document.querySelector('.add-practice-btn').addEventListener('click', addPracticeRow);
+
+            // Función para manejar la entrada de código (autocompletado)
+            function handleCodeInput(e) {
+                const input = e.target;
+                const container = input.closest('.autocomplete-container');
+                const list = container.querySelector('.autocomplete-list');
+                const value = input.value.toUpperCase();
+                
+                // Limpiar lista anterior
+                list.innerHTML = '';
+                list.style.display = 'none';
+                
+                if (value.length < 1) return;
+                
+                // Filtrar prácticas que coincidan
+                const matches = practices.filter(p => 
+                    p.code.includes(value) || 
+                    p.name.toUpperCase().includes(value) ||
+                    p.category.toUpperCase().includes(value)
+                );
+                
+                if (matches.length === 0) return;
+                
+                // Mostrar sugerencias
+                matches.forEach(practice => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.textContent = `${practice.code} - ${practice.name} (${practice.category})`;
+                    item.addEventListener('click', () => {
+                        input.value = practice.code;
+                        list.style.display = 'none';
+                        
+                        // Llenar los campos relacionados
+                        const row = input.closest('.practice-row');
+                        row.querySelector('.record-category').value = practice.category;
+                        row.querySelector('.record-practice').value = practice.name;
+                        row.querySelector('.record-fee').value = practice.fee;
+                        
+                        // Calcular subtotal
+                        calculateSubtotal({target: row.querySelector('.record-quantity')});
+                    });
+                    list.appendChild(item);
+                });
+                
+                list.style.display = 'block';
+            }
+
+            // Función para calcular el subtotal de una práctica
+            function calculateSubtotal(e) {
+                const quantityInput = e.target;
+                const row = quantityInput.closest('.practice-row');
+                const feeInput = row.querySelector('.record-fee');
+                const subtotalInput = row.querySelector('.record-subtotal');
+                
+                const quantity = parseInt(quantityInput.value) || 0;
+                const fee = parseFloat(feeInput.value) || 0;
+                const subtotal = quantity * fee;
+                
+                subtotalInput.value = subtotal.toFixed(2);
+                
+                // Calcular el total general
+                calculateTotal();
+            }
+
+            // Función para calcular el total general
+            function calculateTotal() {
+                const subtotalInputs = document.querySelectorAll('.record-subtotal');
+                let total = 0;
+                
+                subtotalInputs.forEach(input => {
+                    total += parseFloat(input.value) || 0;
+                });
+                
+                document.getElementById('record-total').value = total.toFixed(2);
+            }
+
+            // Configurar eventos para la primera fila de práctica
+            document.querySelector('.record-code').addEventListener('input', handleCodeInput);
+            document.querySelector('.record-quantity').addEventListener('input', calculateSubtotal);
+
+            // Evento para el formulario de registro
+            recordForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Validar que al menos una práctica esté completa
+                const practiceRows = document.querySelectorAll('.practice-row');
+                let practicesData = [];
+                
+                for (const row of practiceRows) {
+                    let code = row.querySelector('.record-code').value.trim().toUpperCase();
+                    let category = row.querySelector('.record-category').value;
+                    let practice = row.querySelector('.record-practice').value;
+                    const quantity = parseInt(row.querySelector('.record-quantity').value);
+                    let fee = parseFloat(row.querySelector('.record-fee').value);
+
+                    // Intentar autocompletar por código exacto si faltan datos
+                    if (code && (!category || !practice || !Number.isFinite(fee))) {
+                        const match = practices.find(p => p.code.toUpperCase() === code);
+                        if (match) {
+                            category = match.category;
+                            practice = match.name;
+                            fee = parseFloat(match.fee);
+                            // actualizar UI
+                            row.querySelector('.record-category').value = category;
+                            row.querySelector('.record-practice').value = practice;
+                            row.querySelector('.record-fee').value = fee;
+                            // recalc subtotal
+                            const subtotalInput = row.querySelector('.record-subtotal');
+                            const subtotal = (Number.isFinite(fee) ? fee : 0) * (Number.isInteger(quantity) ? quantity : 0);
+                            subtotalInput.value = subtotal.toFixed(2);
+                        }
+                    }
+
+                    const feeIsValid = Number.isFinite(fee);
+                    const qtyIsValid = Number.isInteger(quantity) && quantity >= 1;
+                    if (!code || !category || !practice || !feeIsValid || !qtyIsValid) {
+                        alert('Por favor, complete todos los campos de las prácticas.');
+                        return;
+                    }
+
+                    practicesData.push({
+                        code,
+                        category,
+                        practice,
+                        quantity,
+                        fee
+                    });
+                }
+                
+                // Crear el registro
+                const newRecord = {
+                    id: Date.now().toString(),
+                    date: document.getElementById('record-date').value,
+                    receipt: document.getElementById('record-receipt').value,
+                    patient: document.getElementById('record-patient').value,
+                    age: parseInt(document.getElementById('record-age').value),
+                    sex: document.getElementById('record-sex').value,
+                    operator: document.getElementById('record-operator').value,
+                    practices: practicesData,
+                    total: parseFloat(document.getElementById('record-total').value)
+                };
+                
+                // Guardar el registro
+                records.push(newRecord);
+                localStorage.setItem('records', JSON.stringify(records));
+                
+                alert('Registro guardado correctamente.');
+                recordForm.reset();
+                document.getElementById('record-date').valueAsDate = new Date();
+                
+                // Limpiar prácticas y dejar solo una
+                practicesContainer.innerHTML = '';
+                addPracticeRow();
+                
+                // Actualizar tabla de últimos registros
+                renderLastRecords();
+            });
+
+            // --- SECCIÓN 3: REPORTES ---
+
+            // 3.a. Reportes Generales
+            function parseDateLocal(yyyyMmDd) {
+                if (!yyyyMmDd) return null;
+                const parts = yyyyMmDd.split('-').map(Number);
+                if (parts.length !== 3 || parts.some(isNaN)) return null;
+                const year = parts[0];
+                const monthIndex = parts[1] - 1;
+                const day = parts[2];
+                return new Date(year, monthIndex, day);
+            }
+
+            function populateReportFilters() {
+                // Llenar filtro de operadores
+                const filterOperator = document.getElementById('filter-operator');
+                filterOperator.innerHTML = '<option value="">Todos</option>';
+                operators.forEach(o => {
+                    const option = document.createElement('option');
+                    option.value = o.name;
+                    option.textContent = o.name;
+                    filterOperator.appendChild(option);
+                });
+                
+                // Llenar filtro de categorías
+                const filterCategory = document.getElementById('filter-category');
+                filterCategory.innerHTML = '<option value="">Todos</option>';
+                const categories = [...new Set(practices.map(p => p.category))];
+                categories.forEach(c => {
+                    const option = document.createElement('option');
+                    option.value = c;
+                    option.textContent = c;
+                    filterCategory.appendChild(option);
+                });
+            }
+
+            function filterGeneralReport() {
+                const dateFrom = document.getElementById('filter-date-from').value;
+                const dateTo = document.getElementById('filter-date-to').value;
+                const operator = document.getElementById('filter-operator').value;
+                const category = document.getElementById('filter-category').value;
+                
+                // Construir texto de filtros aplicados
+                let filtersText = 'Filtros aplicados: ';
+                if (dateFrom) filtersText += `Desde ${dateFrom} `;
+                if (dateTo) filtersText += `Hasta ${dateTo} `;
+                if (operator) filtersText += `Operador: ${operator} `;
+                if (category) filtersText += `Categoría: ${category}`;
+                document.getElementById('general-report-filters').textContent = filtersText;
+                
+                // Filtrar registros
+                let filteredRecords = records;
+                const fromDate = parseDateLocal(dateFrom);
+                const toDate = dateTo ? new Date(parseDateLocal(dateTo).getTime() + 24*60*60*1000 - 1) : null;
+                if (fromDate) {
+                    filteredRecords = filteredRecords.filter(r => r.date && parseDateLocal(r.date) >= fromDate);
+                }
+                if (toDate) {
+                    filteredRecords = filteredRecords.filter(r => r.date && parseDateLocal(r.date) <= toDate);
+                }
+                if (operator) {
+                    filteredRecords = filteredRecords.filter(r => r.operator === operator);
+                }
+                
+                // Aplanar registros para mostrar cada práctica en una fila
+                const reportData = [];
+                let totalFacturado = 0;
+                
+                filteredRecords.forEach(record => {
+                    record.practices.forEach(practice => {
+                        if (category && practice.category !== category) return;
+                        
+                        reportData.push({
+                            date: record.date,
+                            patient: record.patient,
+                            code: practice.code,
+                            practice: practice.practice,
+                            quantity: practice.quantity,
+                            receipt: record.receipt,
+                            facturado: practice.fee * practice.quantity
+                        });
+                        
+                        totalFacturado += practice.fee * practice.quantity;
+                    });
+                });
+                
+                // Mostrar datos en la tabla
+                const tableBody = document.querySelector('#general-report-table tbody');
+                tableBody.innerHTML = '';
+                
+                reportData.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.date}</td>
+                        <td>${item.patient}</td>
+                        <td>${item.code}</td>
+                        <td>${item.practice}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.receipt}</td>
+                        <td>$${item.facturado.toFixed(2)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                // Mostrar total
+                document.getElementById('general-total').textContent = `Total Facturado: $${totalFacturado.toFixed(2)}`;
+            }
+
+            document.getElementById('filter-general-btn').addEventListener('click', filterGeneralReport);
+            document.getElementById('print-general-btn').addEventListener('click', () => window.print());
+
+            // 3.b. Reportes ISSUNNE
+            function filterISSUNNEReport() {
+                const dateFrom = document.getElementById('filter-ISSUNNE-date-from').value;
+                const dateTo = document.getElementById('filter-ISSUNNE-date-to').value;
+                
+                // Construir texto de filtros aplicados
+                let filtersText = 'Filtros aplicados: ';
+                if (dateFrom) filtersText += `Desde ${dateFrom} `;
+                if (dateTo) filtersText += `Hasta ${dateTo}`;
+                document.getElementById('ISSUNNE-report-filters').textContent = filtersText;
+                
+                // Filtrar registros
+                let filteredRecords = records;
+                const fromDate = parseDateLocal(dateFrom);
+                const toDate = dateTo ? new Date(parseDateLocal(dateTo).getTime() + 24*60*60*1000 - 1) : null;
+                if (fromDate) {
+                    filteredRecords = filteredRecords.filter(r => r.date && parseDateLocal(r.date) >= fromDate);
+                }
+                if (toDate) {
+                    filteredRecords = filteredRecords.filter(r => r.date && parseDateLocal(r.date) <= toDate);
+                }
+                
+                // Aplanar registros para mostrar cada práctica en una fila
+                const reportData = [];
+                let totalImporte = 0;
+                
+                filteredRecords.forEach(record => {
+                    record.practices.forEach(practice => {
+                        // Incluir solo prácticas categoría ISSUNNE
+                        const category = (practice.category || '').toString().toUpperCase();
+                        if (category !== 'ISSUNNE') return;
+                        reportData.push({
+                            date: record.date,
+                            orden: record.receipt,
+                            afiliado: record.patient,
+                            code: practice.code,
+                            cantidad: practice.quantity,
+                            practice: practice.practice,
+                            importe: practice.fee * practice.quantity
+                        });
+                        
+                        totalImporte += practice.fee * practice.quantity;
+                    });
+                });
+                
+                // Mostrar datos en la tabla
+                const tableBody = document.querySelector('#ISSUNNE-report-table tbody');
+                tableBody.innerHTML = '';
+                
+                reportData.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.date}</td>
+                        <td>${item.orden}</td>
+                        <td>${item.afiliado}</td>
+                        <td>${item.code}</td>
+                        <td>${item.cantidad}</td>
+                        <td>${item.practice}</td>
+                        <td>$${item.importe.toFixed(2)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                // Mostrar total
+                document.getElementById('ISSUNNE-total').textContent = `Total Importe: $${totalImporte.toFixed(2)}`;
+            }
+
+            document.getElementById('filter-ISSUNNE-btn').addEventListener('click', filterISSUNNEReport);
+            document.getElementById('print-ISSUNNE-btn').addEventListener('click', () => window.print());
+
+            // --- INICIALIZACIÓN ---
+            renderPractices();
+            renderOperators();
+            populateOperatorSelect();
+            document.getElementById('record-date').valueAsDate = new Date();
+            // Inicializar reportes por si la pestaña se abre de inmediato
+            try { populateReportFilters(); filterGeneralReport(); } catch(_) {}
+            try { filterISSUNNEReport(); } catch(_) {}
+        });
+    </script>
+</body>
+
+</html>
