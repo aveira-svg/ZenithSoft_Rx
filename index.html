@@ -924,6 +924,13 @@
                 };
             }
 
+            // Función de utilidad para guardar datos en localStorage
+            function saveDataToLocalStorage() {
+                localStorage.setItem('practices', JSON.stringify(practices));
+                localStorage.setItem('operators', JSON.stringify(operators));
+                localStorage.setItem('records', JSON.stringify(records));
+            }
+
             // --- VARIABLES PARA EL ALMACENAMIENTO DE DATOS ---
             let practices = JSON.parse(localStorage.getItem('practices')) || [];
             let operators = JSON.parse(localStorage.getItem('operators')) || [];
@@ -977,7 +984,7 @@
                     `;
                     practicesTableBody.appendChild(row);
                 });
-                localStorage.setItem('practices', JSON.stringify(practices));
+                saveDataToLocalStorage();
             }
 
             window.editPractice = (id) => {
@@ -1052,7 +1059,7 @@
                     `;
                     operatorsTableBody.appendChild(row);
                 });
-                localStorage.setItem('operators', JSON.stringify(operators));
+                saveDataToLocalStorage();
             }
 
             window.editOperator = (id) => {
@@ -1140,9 +1147,7 @@
                                 practices = importedData.practices;
                                 operators = importedData.operators;
                                 records = importedData.records;
-                                localStorage.setItem('practices', JSON.stringify(practices));
-                                localStorage.setItem('operators', JSON.stringify(operators));
-                                localStorage.setItem('records', JSON.stringify(records));
+                                saveDataToLocalStorage();
                                 renderPractices();
                                 renderOperators();
                                 // Refrescar vistas dependientes
@@ -1430,7 +1435,7 @@
                 
                 // Guardar el registro
                 records.push(newRecord);
-                localStorage.setItem('records', JSON.stringify(records));
+                saveDataToLocalStorage();
                 
                 alert('Registro guardado correctamente.');
                 recordForm.reset();
