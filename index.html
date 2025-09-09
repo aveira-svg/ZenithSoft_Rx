@@ -10,6 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Box sizing para un modelo de caja más predecible */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
         :root {
             --color-primary: #2c5aa0;
             --color-secondary: #4a90e2;
@@ -41,6 +48,7 @@
             align-items: flex-start;
             min-height: 100vh;
             position: relative;
+            overflow-x: hidden; /* Oculta la barra de desplazamiento horizontal */
         }
 
         body::before {
@@ -68,6 +76,35 @@
             position: relative;
             padding-left: 100px; /* espacio para columnas de pestañas a la izquierda */
             border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Adaptación para dispositivos móviles */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            
+            .nav-tabs {
+                position: static;
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-bottom: 20px;
+                border-bottom: 2px solid var(--color-border);
+            }
+            
+            .nav-link {
+                min-width: auto;
+                flex: 1;
+                padding: 10px 8px;
+                font-size: 0.9em;
+            }
+
+            .nav-link::before,
+            .nav-link::after {
+                display: none;
+            }
         }
 
         header {
@@ -150,7 +187,7 @@
         .nav-link::before {
             content: attr(data-tooltip);
             position: absolute;
-            left: 100%;
+            left: calc(100% + 10px);
             top: 50%;
             transform: translateY(-50%);
             background: rgba(44, 90, 160, 0.95);
@@ -159,6 +196,7 @@
             border-radius: 6px;
             font-size: 0.9em;
             white-space: nowrap;
+            /* max-width: 150px; */ /* Limita el ancho del tooltip */
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
@@ -171,7 +209,7 @@
         .nav-link::after {
             content: '';
             position: absolute;
-            left: 100%;
+            left: calc(100% + 5px);
             top: 50%;
             transform: translateY(-50%);
             border: 5px solid transparent;
@@ -200,35 +238,6 @@
             color: var(--color-secondary);
             background: rgba(74, 144, 226, 0.1);
             box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
-        }
-
-        /* Adaptación para dispositivos móviles */
-        @media (max-width: 768px) {
-            .container {
-                padding-left: 20px;
-                padding-right: 20px;
-            }
-            
-            .nav-tabs {
-                position: static;
-                flex-direction: row;
-                justify-content: center;
-                flex-wrap: wrap;
-                margin-bottom: 20px;
-                border-bottom: 2px solid var(--color-border);
-            }
-            
-            .nav-link {
-                min-width: auto;
-                flex: 1;
-                padding: 10px 8px;
-                font-size: 0.9em;
-            }
-
-            .nav-link::before,
-            .nav-link::after {
-                display: none;
-            }
         }
 
         .tab-content {
@@ -279,7 +288,7 @@
         input,
         select {
             padding: 12px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--color-border);
             border-radius: 10px;
             font-size: 1em;
             width: 100%;
@@ -293,7 +302,7 @@
         select:focus {
             outline: none;
             border-color: var(--color-secondary);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.2);
             transform: translateY(-1px);
         }
 
@@ -387,6 +396,7 @@
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             background: var(--color-text-light);
+            table-layout: fixed; /* Asegura que las columnas no se expandan más allá del ancho */
         }
 
         th,
@@ -394,6 +404,7 @@
             text-align: left;
             padding: 12px 16px;
             border-bottom: 1px solid var(--color-border);
+            word-wrap: break-word; /* Rompe palabras largas para que no desborden la celda */
         }
 
         th {
@@ -726,7 +737,7 @@
                                 <div class="form-group">
                                     <label for="record-code-1">Código</label>
                                     <div class="autocomplete-container">
-                                        <input type="text" id="record-code-1" class="record-code" required>
+                                        <input type="text" id="record-code-1" class="record-code" required data-selected="false">
                                         <div class="autocomplete-list" style="display:none;"></div>
                                     </div>
                                 </div>
@@ -902,6 +913,16 @@
             const tabLinks = document.querySelectorAll('.nav-link');
             const tabContents = document.querySelectorAll('.tab-content');
 
+
+            // Función de utilidad para debounce
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    const context = this;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), delay);
+                };
+            }
 
             // --- VARIABLES PARA EL ALMACENAMIENTO DE DATOS ---
             let practices = JSON.parse(localStorage.getItem('practices')) || [];
@@ -1199,7 +1220,7 @@
                         <div class="form-group">
                             <label for="record-code-${practiceCount}">Código</label>
                             <div class="autocomplete-container">
-                                <input type="text" id="record-code-${practiceCount}" class="record-code" required>
+                                <input type="text" id="record-code-${practiceCount}" class="record-code" required data-selected="false">
                                 <div class="autocomplete-list" style="display:none;"></div>
                             </div>
                         </div>
@@ -1231,7 +1252,7 @@
                 const codeInput = newRow.querySelector('.record-code');
                 const quantityInput = newRow.querySelector('.record-quantity');
 
-                codeInput.addEventListener('input', handleCodeInput);
+                codeInput.addEventListener('input', debouncedHandleCodeInput);
                 quantityInput.addEventListener('input', calculateSubtotal);
 
                 const addBtn = newRow.querySelector('.add-practice-btn');
@@ -1252,7 +1273,7 @@
             document.querySelector('.add-practice-btn').addEventListener('click', addPracticeRow);
 
             // Función para manejar la entrada de código (autocompletado)
-            function handleCodeInput(e) {
+            const debouncedHandleCodeInput = debounce(function(e) {
                 const input = e.target;
                 const container = input.closest('.autocomplete-container');
                 const list = container.querySelector('.autocomplete-list');
@@ -1261,6 +1282,7 @@
                 // Limpiar lista anterior
                 list.innerHTML = '';
                 list.style.display = 'none';
+                input.setAttribute('data-selected', 'false'); // Reiniciar el estado de selección
                 
                 if (value.length < 1) return;
                 
@@ -1274,13 +1296,14 @@
                 if (matches.length === 0) return;
                 
                 // Mostrar sugerencias
-                matches.forEach(practice => {
+                matches.forEach((practice, index) => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
                     item.textContent = `${practice.code} - ${practice.name} (${practice.category})`;
                     item.addEventListener('click', () => {
                         input.value = practice.code;
                         list.style.display = 'none';
+                        input.setAttribute('data-selected', 'true'); // Marcar como seleccionado
                         
                         // Llenar los campos relacionados
                         const row = input.closest('.practice-row');
@@ -1295,7 +1318,19 @@
                 });
                 
                 list.style.display = 'block';
-            }
+
+                // Auto-seleccionar el primer elemento si hay coincidencias
+                /*
+                if (matches.length > 0) {
+                    const firstItem = list.querySelector('.autocomplete-item');
+                    if (firstItem) {
+                        // Usar dispatchEvent para simular un clic y activar el listener
+                        firstItem.dispatchEvent(new Event('click'));
+                        list.style.display = 'block'; // Asegurarse de que la lista siga visible
+                    }
+                }
+                */
+            }, 300); // 300ms de retraso para el debounce
 
             // Función para calcular el subtotal de una práctica
             function calculateSubtotal(e) {
@@ -1311,11 +1346,11 @@
                 subtotalInput.value = subtotal.toFixed(2);
                 
                 // Calcular el total general
-                calculateTotal();
+                debouncedCalculateTotal();
             }
 
             // Función para calcular el total general
-            function calculateTotal() {
+            const debouncedCalculateTotal = debounce(function() {
                 const subtotalInputs = document.querySelectorAll('.record-subtotal');
                 let total = 0;
                 
@@ -1324,10 +1359,10 @@
                 });
                 
                 document.getElementById('record-total').value = total.toFixed(2);
-            }
+            }, 50);
 
             // Configurar eventos para la primera fila de práctica
-            document.querySelector('.record-code').addEventListener('input', handleCodeInput);
+            document.querySelector('.record-code').addEventListener('input', debouncedHandleCodeInput);
             document.querySelector('.record-quantity').addEventListener('input', calculateSubtotal);
 
             // Evento para el formulario de registro
@@ -1344,6 +1379,7 @@
                     let practice = row.querySelector('.record-practice').value;
                     const quantity = parseInt(row.querySelector('.record-quantity').value);
                     let fee = parseFloat(row.querySelector('.record-fee').value);
+                    const isCodeSelected = row.querySelector('.record-code').getAttribute('data-selected') === 'true';
 
                     // Intentar autocompletar por código exacto si faltan datos
                     if (code && (!category || !practice || !Number.isFinite(fee))) {
@@ -1365,8 +1401,8 @@
 
                     const feeIsValid = Number.isFinite(fee);
                     const qtyIsValid = Number.isInteger(quantity) && quantity >= 1;
-                    if (!code || !category || !practice || !feeIsValid || !qtyIsValid) {
-                        alert('Por favor, complete todos los campos de las prácticas.');
+                    if (!code || !category || !practice || !feeIsValid || !qtyIsValid || !isCodeSelected) {
+                        alert('Por favor, complete todos los campos de las prácticas y seleccione un código de la lista.');
                         return;
                     }
 
