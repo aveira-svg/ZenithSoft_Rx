@@ -78,35 +78,6 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Adaptación para dispositivos móviles */
-        @media (max-width: 768px) {
-            .container {
-                padding-left: 20px;
-                padding-right: 20px;
-            }
-            
-            .nav-tabs {
-                position: static;
-                flex-direction: row;
-                justify-content: center;
-                flex-wrap: wrap;
-                margin-bottom: 20px;
-                border-bottom: 2px solid var(--color-border);
-            }
-            
-            .nav-link {
-                min-width: auto;
-                flex: 1;
-                padding: 10px 8px;
-                font-size: 0.9em;
-            }
-
-            .nav-link::before,
-            .nav-link::after {
-                display: none;
-            }
-        }
-
         header {
             text-align: left;
             margin-bottom: 20px;
@@ -165,6 +136,9 @@
             gap: 10px;
             border-bottom: none;
             z-index: 2147483647;
+            /* margin-bottom: 20px; */ /* Eliminar margen inferior si es para modo columna */
+            /* flex-wrap: wrap; */ /* Eliminar si es para modo columna */
+            /* justify-content: center; */ /* Eliminar si es para modo columna */
         }
 
         .nav-link {
@@ -238,6 +212,54 @@
             color: var(--color-secondary);
             background: rgba(74, 144, 226, 0.1);
             box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
+        }
+
+        /* Estilos para el Dropdown */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Controlar visibilidad del dropdown con JavaScript */
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--color-text-light);
+            min-width: 160px;
+            box-shadow: 0 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            left: 100%; /* Posiciona el dropdown a la derecha del botón */
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 10px; /* Espacio entre el botón y el dropdown */
+            border: 1px solid var(--color-border);
+            backdrop-filter: var(--blur);
+        }
+
+        .dropdown-content a,
+        .dropdown-content label {
+            color: var(--color-text);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover,
+        .dropdown-content label:hover {
+            background-color: var(--color-secondary);
+            color: var(--color-text-light);
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
         }
 
         .tab-content {
@@ -571,6 +593,63 @@
                 margin: 1cm;
             }
         }
+
+        /* Adaptación para dispositivos móviles */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 20px; /* Ajustar padding para móvil */
+                padding-right: 20px;
+                padding-top: 100px; /* Añadir padding superior para pestañas horizontales */
+            }
+            
+            .nav-tabs {
+                position: fixed; /* Cambiar a fixed para que se quede arriba */
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: var(--backdrop); /* Fondo para las pestañas */
+                backdrop-filter: var(--blur);
+                padding: 10px 20px; /* Ajustar padding */
+                box-shadow: var(--box-shadow); /* Sombra para destacarse */
+                z-index: 1000;
+                display: flex; /* Asegurar que sea un contenedor flex */
+                flex-direction: row;
+                justify-content: flex-start; /* Alinear al inicio */
+                overflow-x: auto; /* Permitir scroll horizontal */
+                white-space: nowrap; /* Evitar que los elementos se envuelvan */
+                margin-bottom: 0; /* Quitar margen inferior */
+                border-bottom: 2px solid var(--color-border);
+            }
+            
+            .nav-link {
+                flex: 0 0 auto; /* No crecer, no encoger, base automática */
+                padding: 8px 15px; /* Ajustar padding para mejor apariencia */
+                font-size: 0.9em; /* Ajustar tamaño de fuente */
+                margin: 0 5px; /* Margen horizontal entre pestañas */
+            }
+
+            .nav-link::before,
+            .nav-link::after {
+                display: none;
+            }
+        }
+
+        /* Estilo para que el label de "Abrir Backup" se vea como un botón */
+        #backup .form-container .btn-primary {
+            display: inline-block;
+            padding: 12px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            backdrop-filter: var(--blur);
+            overflow: hidden;
+            color: var(--color-text-light);
+            text-align: center;
+            font-size: 1em;
+        }
     </style>
 </head>
 
@@ -586,6 +665,20 @@
             <div class="nav-link" data-tab="reportes-generales" data-tooltip="Reportes Generales">📊</div>
             <div class="nav-link" data-tab="reportes-ISSUNNE" data-tooltip="Reportes ISSUNNE">🏥</div>
             <div class="nav-link" data-tab="configuracion" data-tooltip="Configuración">⚙</div>
+            <div class="nav-link" data-tab="backup" data-tooltip="Opciones de Backup">💾</div>
+        </div>
+
+        <div id="backup" class="tab-content">
+            <h2>Opciones de Backup</h2>
+            <div class="form-container">
+                <p>Guarda todos los datos actuales (prácticas, operadores, registros) en un archivo que puedes guardar en tu computadora.</p>
+                <button id="backup-save-btn-page" class="btn-primary">Guardar Backup</button>
+            </div>
+            <div class="form-container">
+                <p>Carga datos desde un archivo de backup previamente guardado. Ten en cuenta que esto reemplazará todos los datos actuales.</p>
+                <label for="backup-open-file-page" class="btn-primary">Abrir Backup</label>
+                <input type="file" id="backup-open-file-page" accept=".json" style="display: none;">
+            </div>
         </div>
 
         <div id="configuracion" class="tab-content">
@@ -672,17 +765,6 @@
 
             <hr>
 
-            <h2>Backup de Datos</h2>
-            <div class="form-container">
-                <div class="btn-group">
-                    <button id="export-btn" class="btn-success" title="Exportar todos los datos como archivo JSON">Guardar (Backup)</button>
-                    <div class="file-upload-container">
-                        <input type="file" id="import-file" accept=".json">
-                        <label for="import-file" class="file-upload-label" title="Importar datos desde archivo JSON">Importar (Restaurar)</label>
-                        <span id="import-file-name" style="font-style: italic; color: var(--color-primary);"></span>
-                    </div>
-                </div>
-            </div>
         </div>
         <footer>
             <hr>
@@ -958,6 +1040,9 @@
                         filterGeneralReport();
                     } else if (tabId === 'reportes-ISSUNNE') {
                         filterISSUNNEReport();
+                    } else if (tabId === 'backup') {
+                        // No hay lógica adicional para la pestaña de backup aquí,
+                        // ya que los botones de guardar/abrir están en la misma pestaña.
                     }
                 });
             });
@@ -1112,7 +1197,8 @@
             });
 
             // 1.c. Funcionalidad de Backup
-            document.getElementById('export-btn').addEventListener('click', () => {
+            // Se reubica la funcionalidad de backup a los botones del menú desplegable.
+            document.getElementById('backup-save-btn-page').addEventListener('click', () => {
                 const data = {
                     practices: practices,
                     operators: operators,
@@ -1132,11 +1218,11 @@
                 alert('Datos exportados correctamente.');
             });
 
-            document.getElementById('import-file').addEventListener('change', (event) => {
+            document.getElementById('backup-open-file-page').addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
 
-                document.getElementById('import-file-name').textContent = file.name;
+                // document.getElementById('import-file-name').textContent = file.name; // Ya no es necesario mostrar el nombre del archivo en la sección de configuración
 
                 const reader = new FileReader();
                 reader.onload = function (e) {
